@@ -12,6 +12,13 @@ class MaxHeap {
 	}
 
 	pop() {
+		if(this.size === 0) {
+			return;
+		}
+		if (!this.root) {
+			detachRoot(this.root);
+			
+		}
 		
 	}
 
@@ -28,7 +35,7 @@ class MaxHeap {
 	}
 
 	size() {
-		return this.size;
+		return this.parentNodes.length;
 	}
 
 	isEmpty() {
@@ -76,22 +83,49 @@ class MaxHeap {
 	}
 
 	shiftNodeDown(node) {
-		if (!node) return;
-		let maxIndex = this.parentNodes.indexOf(node);
-		let leftIndex = 2 * maxIndex;
-		if (leftIndex <= this.parentNodes.length && this.parentNodes[leftIndex].priority > this.parentNodes[maxInex].priority) {
-			maxIndex = leftIndex;
-		} 
-		let rightIndex = 2 * maxIndex + 1;
-		if (rightIndex <= this.parentNodes.length && this.parentNodes[rightIndex].priority > this.parentNodes[maxInex].priority) {
-			maxIndex = rightIndex;
-		} 
-		if (this.parentNodes.indexOf(node) != maxIndex) {
-			
-			this.parentNodes[maxIndex].swapWithParent();
+		if (node && node.left != null) {
+			let maxIndex = this.parentNodes.indexOf(node);
+			let leftIndex = this.parentNodes.indexOf(node.left);
+			let maxPriorityNode;
+			if (leftIndex <= this.parentNodes.length && node.left.priority > node.priority) {
+				maxIndex = leftIndex;
+				maxPriorityNode = node.left;
+			} 
+			let rightIndex = this.parentNodes.indexOf(node.right);
+			if (node.right && rightIndex <= this.parentNodes.length && node.right.priority > node.left.priority) {
+				maxIndex = rightIndex;
+				maxPriorityNode = node.right;
+			} 
+			if (maxIndex == -1) {
+				if (this.root == node) {
+					this.root = maxPriorityNode;;
+				}
+				maxPriorityNode.swapWithParent();
+				this.shiftNodeDown(node);
+			}
+			if (this.parentNodes.indexOf(node) != maxIndex && node.left != null) {
+				let tmpParentIndex = this.parentNodes.indexOf(node);
+				let tmpChild = this.parentNodes[maxIndex];
+				if (this.root == node) {
+					this.root = tmpChild;
+					this.parentNodes[maxIndex] = node;
+				} else {
+					if (maxIndex > -1) {
+						this.parentNodes[maxIndex] = node;
+					}
+					if (tmpParentIndex > -1) {
+					this.parentNodes[tmpParentIndex] = tmpChild;
+					}	
+				}
+	
+				tmpChild.swapWithParent();
 
-			shiftNodeDown(maxIndex);
+				this.shiftNodeDown(node);
+				
+			}
 		}
+		return;
+
 	}
 }
 
